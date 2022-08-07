@@ -16,6 +16,7 @@ public class CommandManager extends ListenerAdapter {
 
     List<String> thicc = new ArrayList<>();
     HashMap thiccmap = new HashMap();
+    HashMap thiccLevel = new HashMap();
 
     public CommandManager() {
         thicc.add("null");
@@ -28,16 +29,21 @@ public class CommandManager extends ListenerAdapter {
         thicc.add("amazing");
         thicc.add("godly");
         thicc.add("infinitely thicc");
+
     }
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         String command = event.getName();
         if (command.equals("thiccness")) {
-            String userMention = event.getUser().getAsMention();
-            Random random = new Random();
-            thiccmap.put(event.getUser().getAsTag(), random.nextInt(9));
-            final String thiccLevel = String.valueOf(thiccmap.get(event.getUser().getAsTag()));
-            event.reply("The thiccness level of " + userMention + " is " + thiccLevel).queue();
+            if (thiccmap.get(event.getUser().getAsTag()) == null) {
+                String userMention = event.getUser().getAsMention();
+                Random random = new Random();
+                thiccLevel.put(event.getUser().getAsTag(), thicc.get(random.nextInt(9)));
+                event.reply("The thiccness level of " + userMention + " is " + thiccLevel.get(event.getUser().getAsTag())).queue();
+                thiccmap.put(event.getUser().getAsTag(), false);
+            } else {
+                event.reply("The thiccness level of " + event.getUser().getAsMention() + " is " + thiccLevel.get(event.getUser().getAsTag())).queue();
+            }
         }
     }
 
