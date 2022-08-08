@@ -1,8 +1,6 @@
 package net.nylhus.qbot.commands;
 
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -13,6 +11,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.plaf.metal.MetalMenuBarUI;
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +45,7 @@ public class CommandManager extends ListenerAdapter {
             if (thiccmap.get(event.getUser().getAsTag()) == null) {
                 String userMention = event.getUser().getAsMention();
                 Random random = new Random();
-                thiccLevel.put(event.getUser().getAsTag(), thicc.get(random.nextInt(9)));
+                thiccLevel.put(event.getUser().getAsTag(), thicc.get(random.nextInt(10)));
                 event.reply("The thiccness level of " + userMention + " is " + thiccLevel.get(event.getUser().getAsTag())).queue();
                 thiccmap.put(event.getUser().getAsTag(), false);
             } else {
@@ -61,6 +61,40 @@ public class CommandManager extends ListenerAdapter {
             } else {
                 event.reply("You don't have the permissions for this!").queue();
             }
+        } else if (command.equals("mute")) {
+            OptionMapping optionMapping = event.getOption("user");
+            Member member  = event.getMember();
+            if (member.getRoles().toString().contains("Admin")) {
+                Member mutedMember = optionMapping.getAsMember();
+                String mutedUser = optionMapping.getAsUser().getAsMention();
+                if (!mutedMember.getRoles().toString().contains("Muted")) {
+                    Guild guild = mutedMember.getGuild();
+                    List<Role> roles = new ArrayList<>(mutedMember.getRoles());
+                    List<Role> mutedRoles = guild.getRolesByName("muted", true);
+                    roles.addAll(mutedRoles);
+                    guild.modifyMemberRoles(mutedMember, roles).queue();
+                    event.reply("Muted " + mutedUser).setEphemeral(true).queue();
+                } else {
+                    event.reply("This user is already muted").setEphemeral(true).queue();
+                }
+            }
+        } else if (command.equals("unmute")) {
+            OptionMapping optionMapping = event.getOption("user");
+            Member member = event.getMember();
+            String unmutedMember = optionMapping.getAsUser().getAsMention();
+            if (member.getRoles().toString().contains("Admin")) {
+                Member unmutedUser = optionMapping.getAsMember();
+                if (unmutedUser.getRoles().toString().contains("Muted")) {
+                    Guild guild = unmutedUser.getGuild();
+                    List<Role> roles = new ArrayList<>(unmutedUser.getRoles());
+                    List<Role> mutedRoles = guild.getRolesByName("muted", true);
+                    roles.removeAll(mutedRoles);
+                    guild.modifyMemberRoles(unmutedUser, roles).queue();
+                    event.reply("Unmuted " + unmutedMember).setEphemeral(true).queue();
+                } else {
+                    event.reply("This user is not muted").setEphemeral(true).queue();
+                }
+            }
         }
     }
 
@@ -73,6 +107,15 @@ public class CommandManager extends ListenerAdapter {
         OptionData option1 = new OptionData(OptionType.STRING, "message", "Makes the bot says a message", true);
         commandData.add(Commands.slash("admin", "Makes the bot say a message").addOptions(option1));
         event.getGuild().updateCommands().addCommands(commandData).queue();
+
+        OptionData option2 = new OptionData(OptionType.USER, "user", "Mutes a user", false);
+        commandData.add(Commands.slash("mute", "Mutes a user").addOptions(option2));
+        event.getGuild().updateCommands().addCommands(commandData).queue();
+
+        OptionData option3 = new OptionData(OptionType.USER, "user", "Unmutes a muted user");
+        commandData.add(Commands.slash("unmute", "Unnmutes a muted user").addOptions(option3));
+        event.getGuild().updateCommands().addCommands(commandData).queue();
+
     }
 }
 

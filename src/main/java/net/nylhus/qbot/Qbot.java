@@ -18,8 +18,7 @@ public class Qbot {
         config = Dotenv.configure().load();
         String token = config.get("TOKEN");
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(token);
-        builder.setStatus(OnlineStatus.ONLINE);
-        builder.setActivity(Activity.streaming("Goat Simulator 5", "https://youtu.be/dQw4w9WgXcQ"));
+        builder.setActivity(Activity.streaming("Fortnite", "https://youtu.be/dQw4w9WgXcQ"));
         shardManager = builder.build();
         shardManager.addEventListener(new CommandManager());
     }
