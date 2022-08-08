@@ -74,6 +74,8 @@ public class CommandManager extends ListenerAdapter {
                     roles.addAll(mutedRoles);
                     guild.modifyMemberRoles(mutedMember, roles).queue();
                     event.reply("Muted " + mutedUser).setEphemeral(true).queue();
+                    event.getGuildChannel().sendMessage(mutedUser + " was timed out by Quandavious Bingleton").queue();
+                    event.getGuildChannel().sendMessage("https://tenor.com/view/among-us-twerk-thicc-among-us-twerk-funny-among-us-gif-20511920").queue();
                 } else {
                     event.reply("This user is already muted").setEphemeral(true).queue();
                 }
