@@ -74,7 +74,7 @@ public class CommandManager extends ListenerAdapter {
                     roles.addAll(mutedRoles);
                     guild.modifyMemberRoles(mutedMember, roles).queue();
                     event.reply("Muted " + mutedUser).setEphemeral(true).queue();
-                    event.getGuildChannel().sendMessage(mutedUser + " was timed out by Quandavious Bingleton").queue();
+                    event.getGuildChannel().sendMessage(mutedUser + " was muted by Quandavious Bingleton").queue();
                     event.getGuildChannel().sendMessage("https://tenor.com/view/among-us-twerk-thicc-among-us-twerk-funny-among-us-gif-20511920").queue();
                 } else {
                     event.reply("This user is already muted").setEphemeral(true).queue();
@@ -97,6 +97,22 @@ public class CommandManager extends ListenerAdapter {
                     event.reply("This user is not muted").setEphemeral(true).queue();
                 }
             }
+        } else if (command.equals("birthday")) {
+            OptionMapping optionMapping = event.getOption("birthday-boy");
+            Member member = event.getMember();
+            String birthdayBoy = optionMapping.getAsUser().getAsMention();
+            if (member.getRoles().toString().contains("Admin")) {
+                Member birthdayBoi = optionMapping.getAsMember();
+                Guild guild = birthdayBoi.getGuild();
+                List<Role> roles = new ArrayList<>(birthdayBoi.getRoles());
+                List<Role> bRoles = guild.getRolesByName("Birthday Boy", true);
+                roles.addAll(bRoles);
+                guild.modifyMemberRoles(birthdayBoi, roles).queue();
+                event.reply("Happy Birthday has been wished!").setEphemeral(true).queue();
+                event.getGuildChannel().sendMessage("HAPPY BIRTHDAY " + birthdayBoy + " !!!!").queue();
+                event.getGuildChannel().sendMessage("https://tenor.com/view/happy-birthday-the-office-dwight-dwight-schrute-birthday-gif-25725679").queue();
+                event.getGuildChannel().sendMessage(birthdayBoy + " has been given the Birthday Boy role for his legendary contribution to living another year!!!!!").queue();
+            }
         }
     }
 
@@ -116,6 +132,10 @@ public class CommandManager extends ListenerAdapter {
 
         OptionData option3 = new OptionData(OptionType.USER, "user", "Unmutes a muted user");
         commandData.add(Commands.slash("unmute", "Unnmutes a muted user").addOptions(option3));
+        event.getGuild().updateCommands().addCommands(commandData).queue();
+
+        OptionData option4 = new OptionData(OptionType.USER, "birthday-boy", "Wishes a special someone happy birthday");
+        commandData.add(Commands.slash("birthday", "Wishes a special someone a happy birthday").addOptions(option4));
         event.getGuild().updateCommands().addCommands(commandData).queue();
 
     }
